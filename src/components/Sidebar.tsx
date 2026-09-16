@@ -33,10 +33,10 @@ const navItems: { id: Section; label: string; icon: React.ReactNode }[] = [
     label: 'Settings',
     icon: (
   <img
-    src="/src/imports/settings-icon.png"
-    alt="Settings"
-    className="w-[18px] h-[18px] object-contain"
-  />
+  src="/settings-icon.png"
+  alt="Settings"
+  className="w-[18px] h-[18px] object-contain"
+/>
 ),
   },
 ];
