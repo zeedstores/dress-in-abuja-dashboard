@@ -1,0 +1,10 @@
+{
+  "description": "Manage products, orders, and payment settings with a simple, mobile-first dashboard designed for small ecommerce store owners to streamline operations.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
