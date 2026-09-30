@@ -13,7 +13,7 @@ import SettingsSection from './components/settings/SettingsSection';
 import { supabase } from './lib/supabase';
 import { deleteProductImage } from './lib/storage';
 
-const STORE_ID = '1d153859-81de-447a-8017-2dd37d906265';
+const STORE_ID = 'cb72dcbb-089d-47c4-8024-e5df316aaaf8';
 
 export default function App() {
   const [section, setSection] = useState<Section>('products');
