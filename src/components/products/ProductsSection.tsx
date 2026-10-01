@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import type { Product } from '../../types';
 import { formatPrice, stockStatus } from '../../utils';
@@ -13,7 +14,12 @@ interface ProductsSectionProps {
   onDelete: (id: string) => void;
 }
 
-export default function ProductsSection({ products, onAdd, onEdit, onDelete }: ProductsSectionProps) {
+export default function ProductsSection({
+  products,
+  onAdd,
+  onEdit,
+  onDelete,
+}: ProductsSectionProps) {
   const [showForm, setShowForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -44,18 +50,37 @@ export default function ProductsSection({ products, onAdd, onEdit, onDelete }: P
       {/* Section header */}
       <div className="flex items-center justify-between px-5 py-4 md:px-8 md:py-6 shrink-0">
         <div>
-          <h1 className="font-serif text-xl md:text-2xl font-medium text-foreground">Products</h1>
+          <h1 className="font-serif text-xl md:text-2xl font-medium text-foreground">
+            Products
+          </h1>
+
           <p className="text-sm text-muted-foreground mt-0.5">
-            {products.length} {products.length === 1 ? 'product' : 'products'}
+            {products.length}{' '}
+            {products.length === 1 ? 'product' : 'products'}
           </p>
         </div>
+
         <button
-          onClick={() => { setEditingProduct(null); setShowForm(true); }}
+          onClick={() => {
+            setEditingProduct(null);
+            setShowForm(true);
+          }}
           className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-accent transition-colors"
         >
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-            <path d="M7 1v12M1 7h12" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+          >
+            <path
+              d="M7 1v12M1 7h12"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
           </svg>
+
           Add Product
         </button>
       </div>
@@ -65,18 +90,58 @@ export default function ProductsSection({ products, onAdd, onEdit, onDelete }: P
         {products.length === 0 ? (
           <EmptyState
             icon={
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <rect x="2" y="2" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="13" y="2" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="2" y="13" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
-                <rect x="13" y="13" width="9" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+              >
+                <rect
+                  x="2"
+                  y="2"
+                  width="9"
+                  height="9"
+                  rx="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <rect
+                  x="13"
+                  y="2"
+                  width="9"
+                  height="9"
+                  rx="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <rect
+                  x="2"
+                  y="13"
+                  width="9"
+                  height="9"
+                  rx="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
+                <rect
+                  x="13"
+                  y="13"
+                  width="9"
+                  height="9"
+                  rx="1.5"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                />
               </svg>
             }
             title="No products yet"
             description="Add your first product to get started."
             action={
               <button
-                onClick={() => { setEditingProduct(null); setShowForm(true); }}
+                onClick={() => {
+                  setEditingProduct(null);
+                  setShowForm(true);
+                }}
                 className="px-5 py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-medium hover:bg-accent transition-colors"
               >
                 Add Product
@@ -140,33 +205,68 @@ function ProductCard({
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
         />
       </div>
+
       <div className="p-4">
         <div className="flex items-start justify-between gap-2 mb-2">
-          <h3 className="font-medium text-sm text-foreground leading-snug line-clamp-2">{product.name}</h3>
+          <h3 className="font-medium text-sm text-foreground leading-snug line-clamp-2">
+            {product.name}
+          </h3>
+
           <StockBadge status={status} />
         </div>
+
         <div className="flex items-center justify-between">
           <div>
-            <span className="font-serif text-base font-medium text-foreground">{formatPrice(product.price)}</span>
-            <p className="text-xs text-muted-foreground mt-0.5">{product.stock} in stock</p>
+            <span className="font-serif text-base font-medium text-foreground">
+              {formatPrice(product.price)}
+            </span>
+
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {product.stock === null
+                ? 'Stock not tracked'
+                : `${product.stock} in stock`}
+            </p>
           </div>
+
           <div className="flex gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button
               onClick={onEdit}
               className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
               aria-label="Edit"
             >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M9.5 1.5l3 3L4 13H1v-3L9.5 1.5z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <path
+                  d="M9.5 1.5l3 3L4 13H1v-3L9.5 1.5z"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
+
             <button
               onClick={onDelete}
               className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-rose-50 transition-colors text-muted-foreground hover:text-rose-600"
               aria-label="Delete"
             >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-                <path d="M1.5 3.5h11M5 3.5V2h4v1.5M3 3.5l.7 8.5h6.6L11 3.5" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 14 14"
+                fill="none"
+              >
+                <path
+                  d="M1.5 3.5h11M5 3.5V2h4v1.5M3 3.5l.7 8.5h6.6L11 3.5"
+                  stroke="currentColor"
+                  strokeWidth="1.3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
               </svg>
             </button>
           </div>

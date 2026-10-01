@@ -4,7 +4,7 @@ export interface Product {
   id: string;
   name: string;
   price: number;
-  stock: number;
+  stock: number | null;
   image: string;
   description?: string;
 }
@@ -37,7 +37,7 @@ export interface Settings {
   bankName: string;
   accountName: string;
   accountNumber: string;
-  paymentInstructions: string;
+  
 }
 
 export type Section = 'products' | 'orders' | 'settings';

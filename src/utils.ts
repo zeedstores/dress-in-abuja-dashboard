@@ -1,3 +1,4 @@
+
 import type { OrderItem, OrderStatus } from './types';
 
 export function formatPrice(amount: number): string {
@@ -16,9 +17,12 @@ export function orderTotal(items: OrderItem[]): number {
   return items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
-export function stockStatus(stock: number): 'in_stock' | 'low_stock' | 'out_of_stock' {
+export function stockStatus(
+  stock: number | null
+): 'in_stock' | 'low_stock' | 'out_of_stock' | 'not_tracked' {
+  if (stock === null) return 'not_tracked';
   if (stock === 0) return 'out_of_stock';
-  if (stock <= 10) return 'low_stock';
+  if (stock <= 5) return 'low_stock';
   return 'in_stock';
 }
 
@@ -26,6 +30,7 @@ export const stockLabels = {
   in_stock: 'In Stock',
   low_stock: 'Low Stock',
   out_of_stock: 'Out of Stock',
+  not_tracked: 'Stock Not Tracked',
 } as const;
 
 export const orderStatusLabels: Record<OrderStatus, string> = {

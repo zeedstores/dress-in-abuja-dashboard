@@ -1,6 +1,12 @@
 
 import { useEffect, useState } from 'react';
-import type { Order, OrderStatus, Product, Section, Settings } from './types';
+import type {
+  Order,
+  OrderStatus,
+  Product,
+  Section,
+  Settings,
+} from './types';
 import { initialOrders, initialSettings } from './data';
 
 import Sidebar from './components/Sidebar';
@@ -17,14 +23,14 @@ const STORE_ID = 'cb72dcbb-089d-47c4-8024-e5df316aaaf8';
 
 export default function App() {
   const [section, setSection] = useState<Section>('products');
-
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [settings, setSettings] = useState<Settings>(initialSettings);
 
-  // =========================
+  // --------------------------------------------------
   // LOAD PRODUCTS
-  // =========================
+  // --------------------------------------------------
+
   useEffect(() => {
     async function loadProducts() {
       const { data, error } = await supabase
@@ -55,9 +61,10 @@ export default function App() {
     loadProducts();
   }, []);
 
-  // =========================
+  // --------------------------------------------------
   // LOAD ORDERS
-  // =========================
+  // --------------------------------------------------
+
   useEffect(() => {
     async function loadOrders() {
       const { data, error } = await supabase
@@ -87,7 +94,10 @@ export default function App() {
         return;
       }
 
-      console.log('Orders loaded:', JSON.stringify(data, null, 2));
+      console.log(
+        'Orders loaded:',
+        JSON.stringify(data, null, 2)
+      );
 
       setOrders(
         data.map((order) => ({
@@ -113,9 +123,10 @@ export default function App() {
     loadOrders();
   }, []);
 
-  // =========================
-  // LOAD STORE SETTINGS
-  // =========================
+  // --------------------------------------------------
+  // LOAD SETTINGS
+  // --------------------------------------------------
+
   useEffect(() => {
     async function loadSettings() {
       const [storeResult, paymentResult] = await Promise.all([
@@ -128,14 +139,17 @@ export default function App() {
         supabase
           .from('payment_settings')
           .select(
-            'bank_name, account_name, account_number, payment_instructions'
+            'bank_name, account_name, account_number'
           )
           .eq('store_id', STORE_ID)
           .maybeSingle(),
       ]);
 
       if (storeResult.error) {
-        console.error('Failed to load store settings:', storeResult.error);
+        console.error(
+          'Failed to load store settings:',
+          storeResult.error
+        );
       }
 
       if (paymentResult.error) {
@@ -147,39 +161,34 @@ export default function App() {
 
       setSettings({
         storeName:
-          storeResult.data?.name ?? initialSettings.storeName,
+          storeResult.data?.name ??
+          initialSettings.storeName,
 
         whatsappNumber:
           storeResult.data?.whatsapp_number ??
           initialSettings.whatsappNumber,
 
         bankName:
-          paymentResult.data?.bank_name ??
-          initialSettings.bankName,
+          paymentResult.data?.bank_name ?? '',
 
         accountName:
-          paymentResult.data?.account_name ??
-          initialSettings.accountName,
+          paymentResult.data?.account_name ?? '',
 
         accountNumber:
-          paymentResult.data?.account_number ??
-          initialSettings.accountNumber,
-
-        paymentInstructions:
-          paymentResult.data?.payment_instructions ??
-          initialSettings.paymentInstructions,
+          paymentResult.data?.account_number ?? '',
       });
     }
 
     loadSettings();
   }, []);
 
-  // =========================
+  // --------------------------------------------------
   // SAVE SETTINGS
-  // =========================
+  // --------------------------------------------------
+
   async function saveSettings(updated: Settings) {
     try {
-      // Save store details
+      // Store details
       const { error: storeError } = await supabase
         .from('stores')
         .update({
@@ -193,7 +202,7 @@ export default function App() {
         throw storeError;
       }
 
-      // Save payment details
+      // Payment details
       const { error: paymentError } = await supabase
         .from('payment_settings')
         .upsert(
@@ -202,7 +211,6 @@ export default function App() {
             bank_name: updated.bankName,
             account_name: updated.accountName,
             account_number: updated.accountNumber,
-            payment_instructions: updated.paymentInstructions,
             updated_at: new Date().toISOString(),
           },
           {
@@ -214,24 +222,38 @@ export default function App() {
         throw paymentError;
       }
 
-      // Update dashboard state
       setSettings(updated);
 
-      console.log('Settings saved successfully:', updated);
+      console.log(
+        'Settings saved successfully:',
+        updated
+      );
 
       alert('Settings saved successfully!');
     } catch (error) {
-      console.error('Failed to save settings:', JSON.stringify(error, null, 2));
-alert(`Failed to save settings: ${JSON.stringify(error)}`);
+      console.error(
+        'Failed to save settings:',
+        error
+      );
+
+      alert(
+        `Failed to save settings: ${JSON.stringify(error)}`
+      );
     }
   }
 
-  // =========================
+  // --------------------------------------------------
   // ADD PRODUCT
-  // =========================
-  async function addProduct(data: Omit<Product, 'id'>) {
+  // --------------------------------------------------
+
+  async function addProduct(
+    data: Omit<Product, 'id'>
+  ) {
     try {
-      const { data: newProduct, error } = await supabase
+      const {
+        data: newProduct,
+        error,
+      } = await supabase
         .from('products')
         .insert({
           store_id: STORE_ID,
@@ -254,39 +276,61 @@ alert(`Failed to save settings: ${JSON.stringify(error)}`);
         price: newProduct.price,
         stock: newProduct.stock,
         image: newProduct.image_url,
-        description: newProduct.description ?? undefined,
+        description:
+          newProduct.description ?? undefined,
       };
 
-      setProducts((prev) => [product, ...prev]);
+      setProducts((prev) => [
+        product,
+        ...prev,
+      ]);
 
-      console.log('Product saved:', product);
+      console.log(
+        'Product saved:',
+        product
+      );
     } catch (error) {
-      console.error('Failed to save product:', error);
-      alert('Failed to save product. Please try again.');
+      console.error(
+        'Failed to save product:',
+        error
+      );
+
+      alert(
+        'Failed to save product. Please try again.'
+      );
     }
   }
 
-  // =========================
+  // --------------------------------------------------
   // EDIT PRODUCT
-  // =========================
-  async function editProduct(updated: Product) {
-    try {
-      const currentProduct = products.find((p) => p.id === updated.id);
+  // --------------------------------------------------
 
-      const { data, error } = await supabase
+  async function editProduct(
+    updated: Product
+  ) {
+    try {
+      const currentProduct = products.find(
+        (p) => p.id === updated.id
+      );
+
+      const { error } = await supabase
         .from('products')
         .update({
           name: updated.name,
           price: updated.price,
           stock: updated.stock,
-          description: updated.description ?? null,
+          description:
+            updated.description ?? null,
           image_url: updated.image,
         })
-        .eq('id', updated.id)
-        .select()
-        .single();
+        .eq('id', updated.id);
 
       if (error) {
+        console.error(
+          'Supabase update error:',
+          error
+        );
+
         throw error;
       }
 
@@ -294,35 +338,55 @@ alert(`Failed to save settings: ${JSON.stringify(error)}`);
         currentProduct &&
         currentProduct.image !== updated.image
       ) {
-        await deleteProductImage(currentProduct.image);
+        await deleteProductImage(
+          currentProduct.image
+        );
       }
 
       const product: Product = {
-        id: data.id,
-        name: data.name,
-        price: data.price,
-        stock: data.stock,
-        image: data.image_url,
-        description: data.description ?? undefined,
+        id: updated.id!,
+        name: updated.name,
+        price: updated.price,
+        stock: updated.stock,
+        image: updated.image,
+        description: updated.description,
       };
 
       setProducts((prev) =>
-        prev.map((p) => (p.id === product.id ? product : p))
+        prev.map((p) =>
+          p.id === product.id
+            ? product
+            : p
+        )
       );
 
-      console.log('Product updated:', product);
+      console.log(
+        'Product updated successfully:',
+        product
+      );
     } catch (error) {
-      console.error('Failed to update product:', error);
-      alert('Failed to update product. Please try again.');
+      console.error(
+        'Failed to update product:',
+        error
+      );
+
+      alert(
+        'Failed to update product. Please try again.'
+      );
     }
   }
 
-  // =========================
+  // --------------------------------------------------
   // DELETE PRODUCT
-  // =========================
-  async function deleteProduct(id: string) {
+  // --------------------------------------------------
+
+  async function deleteProduct(
+    id: string
+  ) {
     try {
-      const product = products.find((p) => p.id === id);
+      const product = products.find(
+        (p) => p.id === id
+      );
 
       const { error } = await supabase
         .from('products')
@@ -334,31 +398,51 @@ alert(`Failed to save settings: ${JSON.stringify(error)}`);
       }
 
       if (product?.image) {
-        await deleteProductImage(product.image);
+        await deleteProductImage(
+          product.image
+        );
       }
 
-      setProducts((prev) => prev.filter((p) => p.id !== id));
+      setProducts((prev) =>
+        prev.filter(
+          (p) => p.id !== id
+        )
+      );
 
-      console.log('Product deleted:', id);
+      console.log(
+        'Product deleted:',
+        id
+      );
     } catch (error) {
-      console.error('Failed to delete product:', error);
-      alert('Failed to delete product. Please try again.');
+      console.error(
+        'Failed to delete product:',
+        error
+      );
+
+      alert(
+        'Failed to delete product. Please try again.'
+      );
     }
   }
 
-  // =========================
+  // --------------------------------------------------
   // UPDATE ORDER STATUS
-  // =========================
+  // --------------------------------------------------
+
   async function updateOrderStatus(
     id: string,
     status: OrderStatus
   ) {
     try {
-      const { data, error } = await supabase
+      const {
+        data,
+        error,
+      } = await supabase
         .from('orders')
         .update({
           status: status,
-          updated_at: new Date().toISOString(),
+          updated_at:
+            new Date().toISOString(),
         })
         .eq('id', id)
         .select()
@@ -371,17 +455,34 @@ alert(`Failed to save settings: ${JSON.stringify(error)}`);
       setOrders((prev) =>
         prev.map((o) =>
           o.id === id
-            ? { ...o, status: data.status as OrderStatus }
+            ? {
+                ...o,
+                status:
+                  data.status as OrderStatus,
+              }
             : o
         )
       );
 
-      console.log('Order status updated:', data);
+      console.log(
+        'Order status updated:',
+        data
+      );
     } catch (error) {
-      console.error('Failed to update order status:', error);
-      alert('Failed to update order status. Please try again.');
+      console.error(
+        'Failed to update order status:',
+        error
+      );
+
+      alert(
+        'Failed to update order status. Please try again.'
+      );
     }
   }
+
+  // --------------------------------------------------
+  // UI
+  // --------------------------------------------------
 
   return (
     <div className="flex flex-col md:flex-row h-full bg-background">
@@ -410,7 +511,9 @@ alert(`Failed to save settings: ${JSON.stringify(error)}`);
           {section === 'orders' && (
             <OrdersSection
               orders={orders}
-              onStatusChange={updateOrderStatus}
+              onStatusChange={
+                updateOrderStatus
+              }
             />
           )}
 
@@ -430,4 +533,3 @@ alert(`Failed to save settings: ${JSON.stringify(error)}`);
     </div>
   );
 }
-

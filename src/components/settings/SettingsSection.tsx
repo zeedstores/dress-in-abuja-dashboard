@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import type { Settings } from '../../types';
 
@@ -7,7 +6,10 @@ interface SettingsSectionProps {
   onSave: (s: Settings) => void;
 }
 
-export default function SettingsSection({ settings, onSave }: SettingsSectionProps) {
+export default function SettingsSection({
+  settings,
+  onSave,
+}: SettingsSectionProps) {
   const [form, setForm] = useState(settings);
   const [saved, setSaved] = useState(false);
 
@@ -19,14 +21,16 @@ export default function SettingsSection({ settings, onSave }: SettingsSectionPro
     e.preventDefault();
     onSave(form);
     setSaved(true);
-    setTimeout(() => setSaved(false), 2500);
+
+    setTimeout(() => {
+      setSaved(false);
+    }, 2500);
   }
 
   function field(
     key: keyof Settings,
     label: string,
-    placeholder: string,
-    multiline?: boolean
+    placeholder: string
   ) {
     return (
       <div key={key}>
@@ -34,27 +38,18 @@ export default function SettingsSection({ settings, onSave }: SettingsSectionPro
           {label}
         </label>
 
-        {multiline ? (
-          <textarea
-            rows={4}
-            value={form[key]}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, [key]: e.target.value }))
-            }
-            placeholder={placeholder}
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition resize-none"
-          />
-        ) : (
-          <input
-            type="text"
-            value={form[key]}
-            onChange={(e) =>
-              setForm((f) => ({ ...f, [key]: e.target.value }))
-            }
-            placeholder={placeholder}
-            className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
-          />
-        )}
+        <input
+          type="text"
+          value={form[key]}
+          onChange={(e) =>
+            setForm((f) => ({
+              ...f,
+              [key]: e.target.value,
+            }))
+          }
+          placeholder={placeholder}
+          className="w-full px-4 py-3 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition"
+        />
       </div>
     );
   }
@@ -72,8 +67,10 @@ export default function SettingsSection({ settings, onSave }: SettingsSectionPro
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 pb-10 md:px-8">
-        <form onSubmit={handleSubmit} className="max-w-lg flex flex-col gap-5">
-
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-lg flex flex-col gap-5"
+        >
           {/* Store Details */}
           <div className="bg-card rounded-2xl border border-border p-5 flex flex-col gap-5">
             <div className="pb-1">
@@ -120,13 +117,6 @@ export default function SettingsSection({ settings, onSave }: SettingsSectionPro
               'Account Number',
               'e.g. 3012345678'
             )}
-
-            {field(
-              'paymentInstructions',
-              'Payment Instructions',
-              'Instructions for customers...',
-              true
-            )}
           </div>
 
           <button
@@ -139,10 +129,8 @@ export default function SettingsSection({ settings, onSave }: SettingsSectionPro
           >
             {saved ? 'Saved!' : 'Save Settings'}
           </button>
-
         </form>
       </div>
     </div>
   );
 }
-
